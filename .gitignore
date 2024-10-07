@@ -13,5 +13,6 @@
 *.exe
 *.obj
 *.bin
+*.gz
 build/
 CMakeFiles/
