@@ -1,10 +1,12 @@
 import torch.nn as nn
 import torch
 import torchmetrics
+from models.testing_functions import eval
 from tqdm import tqdm
 
 def train(model: nn.Module,
-          dataloader: torch.utils.data.DataLoader,
+          training_dataloader: torch.utils.data.DataLoader,
+          testing_dataloader: torch.utils.data.DataLoader,
           loss_fn: nn.Module,
           optimizer: torch.optim.Optimizer,
           metric_fn: torchmetrics,
@@ -13,24 +15,34 @@ def train(model: nn.Module,
 
 
     results = { "train_loss": [],
-               "train_metric": []
+               "train_metric": [],
+               "test_loss": [],
+               "test_metric": []
                }
 
     for epoch in range(epochs):
         
         print(f"Epoch {epoch + 1}/{epochs}:")
 
-        loss_value, metric_value = train_step(model = model,
-                   dataloader = dataloader,
+        train_loss_value, train_metric_value = train_step(model = model,
+                   dataloader = training_dataloader,
                    loss_fn = loss_fn,
                    optimizer = optimizer,
                    metric_fn = metric_fn,
                    device = device)
-        
-        print(f"Epoch {epoch + 1} | Train loss: {loss_value} | Train metric: {metric_value}")
 
-        results["train_loss"].append(loss_value)
-        results["train_metric"].append(metric_value)
+        test_loss_value, test_metric_value = eval(model = model,
+                                                  dataloader = testing_dataloader,
+                                                  loss_fn = loss_fn,
+                                                  metric_fn = metric_fn,
+                                                  device = device)
+
+        print(f"Epoch {epoch + 1} | Train loss: {train_loss_value} | Train metric: {train_metric_value} | Test loss: {test_loss_value} | Test metric: {test_metric_value}")
+
+        results["train_loss"].append(train_loss_value)
+        results["train_metric"].append(train_metric_value)
+        results["test_loss"].append(test_loss_value)
+        results["test_metric"].append(test_metric_value)
 
     return results
 

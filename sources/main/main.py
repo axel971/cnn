@@ -71,19 +71,13 @@ def main(data_dir: str):
     EPOCHS = 10
 
     train(model = model,
-          dataloader = training_dataloader,
+          training_dataloader = training_dataloader,
+          testing_dataloader = testing_dataloader,
           loss_fn = loss_fn,
           optimizer = optimizer,
           metric_fn = metric_fn,
           epochs = EPOCHS,
           device = device)
-
-    # Evaluate the model
-    eval(model = model,
-         dataloader = testing_dataloader,
-         loss_fn = loss_fn,
-         metric_fn = metric_fn,
-         device = device)
 
     return
 

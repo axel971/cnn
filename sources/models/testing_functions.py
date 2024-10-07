@@ -31,6 +31,6 @@ def eval(model: nn.Module,
     
     metric_fn.reset()
 
-    print(f"Testing Loss: {loss_value} | Testing metric: {metric_value}")
+    #print(f"Testing Loss: {loss_value} | Testing metric: {metric_value}")
 
     return loss_value, metric_value
