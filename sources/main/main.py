@@ -84,6 +84,12 @@ def main(data_dir: str):
                                  writer_dir = DATA_DIR / "logs" )
           )
 
+    # Save the model
+    SAVE_MODEL_DIR = DATA_DIR /"models"/ model.name / "weights" 
+    SAVE_MODEL_DIR.mkdir(parents = True, exist_ok = True)
+
+    torch.save(model.state_dict(), SAVE_MODEL_DIR / "final_weights.pth")
+
     return
 
 if __name__ == "__main__":

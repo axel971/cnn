@@ -15,5 +15,8 @@
 *.bin
 *.gz
 *-ubyte
+*.pth
+*.pt
+logs/
 build/
 CMakeFiles/
