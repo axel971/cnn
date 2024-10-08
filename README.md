@@ -5,5 +5,5 @@ cd HOME_DIR/sources/main </br>
 python main.py -data_dir "HOME_DIR/data"
 
 ## Track experiments
-cd HOME_DIR/data < /br>
+cd HOME_DIR/data </br>
 tensorboard --logdir ./logs
