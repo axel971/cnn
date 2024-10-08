@@ -17,7 +17,7 @@ path_root = Path(__file__).parents[1]
 sys.path.append(str(path_root))
 
 from models.CNN import CNN
-from models.training_functions import train
+from models.training_functions import train, create_writer
 from models.testing_functions import eval
 
 def main(data_dir: str):
@@ -54,18 +54,19 @@ def main(data_dir: str):
                                     batch_size = BATCH_SIZE,
                                     shuffle = False)
 
+    # Device agnostic code
+    device = "gpu" if torch.cuda.is_available() else "cpu"
+
     # Initialize the model
     model = CNN(in_channels = 1,
-                out_channels = num_classes)
+                out_channels = num_classes).to(device)
+    model.name = "cnn"
 
     # Initialize loss, optimizer, and metric functions
     loss_fn = CrossEntropyLoss()
     optimizer = Adam(params = model.parameters(),
                      lr = 1e-3)
     metric_fn = Accuracy(task = "multiclass", num_classes = num_classes)
-
-    # Device agnostic code
-    device = "gpu" if torch.cuda.is_available() else "cpu"
 
     # Train the network
     EPOCHS = 10
@@ -77,7 +78,11 @@ def main(data_dir: str):
           optimizer = optimizer,
           metric_fn = metric_fn,
           epochs = EPOCHS,
-          device = device)
+          device = device,
+          writer = create_writer(experiment_name =f"{EPOCHS}_epochs",
+                                 model_name = model.name,
+                                 writer_dir = DATA_DIR / "logs" )
+          )
 
     return
 

@@ -3,6 +3,30 @@ import torch
 import torchmetrics
 from models.testing_functions import eval
 from tqdm import tqdm
+from torch.utils.tensorboard import SummaryWriter
+from typing import Dict, List
+
+def create_writer(experiment_name: str,
+                  model_name: str,
+                  writer_dir: str,
+                  extra: str = None):
+    
+    from datetime import datetime
+    import os
+
+    # Get timestamp of current date in reverse order
+    timestamp = datetime.now().strftime("%Y-%m-%d")
+
+    # Create log dir path
+    if extra:
+        log_dir = os.path.join(writer_dir, timestamp, experiment_name, model_name, extra)
+    else:
+        log_dir = os.path.join(writer_dir, timestamp, experiment_name, model_name)
+
+    print(f"[INFO] Created summary writer was saved to {log_dir}")
+
+    return SummaryWriter(log_dir = log_dir)
+
 
 def train(model: nn.Module,
           training_dataloader: torch.utils.data.DataLoader,
@@ -11,7 +35,8 @@ def train(model: nn.Module,
           optimizer: torch.optim.Optimizer,
           metric_fn: torchmetrics,
           epochs: int,
-          device):
+          device: torch.device,
+          writer: torch.utils.tensorboard.writer.SummaryWriter) -> Dict[str, List]:
 
 
     results = { "train_loss": [],
@@ -43,6 +68,25 @@ def train(model: nn.Module,
         results["train_metric"].append(train_metric_value)
         results["test_loss"].append(test_loss_value)
         results["test_metric"].append(test_metric_value)
+
+        # Put results in a SummaryWriter for tracking experiment
+        if writer:
+
+            # Add loss results to SummaryWriter
+            writer.add_scalars(main_tag = "Loss",
+                               tag_scalar_dict = {"train_loss": train_loss_value,
+                                                  "test_loss": test_loss_value},
+                               global_step = epoch
+                               )
+            
+            # Add metric results to SummaryWriter
+            writer.add_scalars(main_tag = "Metric",
+                               tag_scalar_dict = {"train_metric": train_metric_value,
+                                                  "test_metric": test_metric_value},
+                               global_step = epoch)
+
+            # Close the writer
+            writer.close
 
     return results
 
