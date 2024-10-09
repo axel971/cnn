@@ -5,6 +5,7 @@ from models.testing_functions import eval
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from typing import Dict, List
+import shutil
 
 def create_writer(experiment_name: str,
                   model_name: str,
@@ -23,6 +24,9 @@ def create_writer(experiment_name: str,
     else:
         log_dir = os.path.join(writer_dir, timestamp, experiment_name, model_name)
 
+    if os.path.exists(log_dir) and os.path.isdir(log_dir):
+        shutil.rmtree(log_dir)
+        
     print(f"[INFO] Created summary writer was saved to {log_dir}")
 
     return SummaryWriter(log_dir = log_dir)
